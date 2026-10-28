@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WebPanda</title>
+<style>
+  :root {
+    color-scheme: dark;
+    --bg: #07130f;
+    --panel: #0d2119;
+    --panel-2: #123326;
+    --green: #1f7a4d;
+    --green-light: #56d68b;
+    --accent: #56d68b;
+    --custom-bg: none;
+    --text: #eff8f1;
+    --muted: #9db8a7;
+    --border: #244b38;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh; color: var(--text);
+    background: radial-gradient(ellipse at top, #153d2b 0%, var(--bg) 58%); background-image: var(--custom-bg), radial-gradient(ellipse at top, #153d2b 0%, var(--bg) 58%); background-size: cover; background-position: center; background-attachment: fixed;
+    font-family: "Segoe UI", Arial, sans-serif;
+  }
+  .topbar {
+    display: flex; align-items: center; gap: 12px; padding: 13px 18px;
+    background: rgba(5, 16, 11, .88); border-bottom: 1px solid var(--border);
+    position: sticky; top: 0; backdrop-filter: blur(12px);
+  }
+  .logo {
+    width: 39px; height: 39px; border-radius: 13px; display: grid; place-items: center;
+    background: linear-gradient(145deg, #39a86b, #145333); font-size: 23px;
+    box-shadow: 0 5px 18px #0005;
+  }
+  .brand { font-size: 19px; font-weight: 750; letter-spacing: .2px; }
+  .brand span { color: var(--accent); }
+  .tag { color: var(--muted); font-size: 12px; margin-top: 2px; }
+  .spacer { flex: 1; }
+  .status { color: var(--muted); font-size: 12px; }
+  main { width: min(850px, calc(100% - 32px)); margin: 9vh auto 40px; text-align: center; }
+  .mascot { font-size: 58px; filter: drop-shadow(0 8px 15px #0007); margin-bottom: 12px; }
+  h1 { font-size: clamp(34px, 6vw, 52px); margin: 0; letter-spacing: -1.5px; }
+  h1 span { color: var(--accent); }
+  .subtitle { color: var(--muted); margin: 12px 0 30px; font-size: 15px; }
+  .search {
+    display: flex; align-items: center; gap: 10px; padding: 8px;
+    background: #10271d; border: 1px solid #326449; border-radius: 17px;
+    box-shadow: 0 16px 45px #0005; transition: border .2s, box-shadow .2s;
+  }
+  .search:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px #56d68b20, 0 16px 45px #0005; }
+  .search-icon { padding-left: 10px; color: var(--accent); font-size: 20px; }
+  input {
+    flex: 1; min-width: 0; padding: 13px 3px; border: 0; outline: 0;
+    color: var(--text); background: transparent; font-size: 16px;
+  }
+  input::placeholder { color: #8ca697; }
+  button {
+    border: 0; border-radius: 11px; padding: 12px 18px; background: var(--green);
+    color: white; font-weight: 700; cursor: pointer; transition: background .2s, transform .2s;
+  }
+  button:hover { background: #26945c; transform: translateY(-1px); }
+  .quick-title { margin: 35px 0 14px; text-align: left; color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 1.6px; }
+  .shortcuts { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .shortcut {
+    padding: 18px 8px; border: 1px solid var(--border); border-radius: 15px;
+    background: #0b1e16cc; color: var(--text); text-decoration: none; min-height: 104px;
+    display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 9px;
+    transition: transform .2s, border-color .2s, background .2s;
+  }
+  .shortcut:hover { transform: translateY(-3px); border-color: #3d9464; background: #123326; }
+  .shortcut .emoji { font-size: 25px; }
+  .shortcut .name { font-size: 13px; font-weight: 650; }
+  .settings-button { padding: 9px 12px; border: 1px solid var(--border); background: var(--panel-2); color: var(--accent); }
+  .settings-panel { display:none; position:fixed; inset:0; z-index:20; background:#0009; align-items:center; justify-content:center; padding:18px; }
+  .settings-card { width:min(620px,100%); max-height:90vh; overflow:auto; text-align:left; background:#0b1e16; border:1px solid var(--border); border-radius:18px; padding:22px; box-shadow:0 25px 80px #0009; }
+  .settings-card h2 { margin:0 0 6px; color:var(--accent); }
+  .settings-card h3 { margin:18px 0 8px; font-size:14px; }
+  .settings-card label { display:block; margin:10px 0 5px; color:var(--muted); font-size:13px; }
+  .settings-card input, .settings-card select { width:100%; padding:10px; border:1px solid var(--border); border-radius:9px; background:#10271d; color:var(--text); }
+  .settings-card .row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .setting-actions { display:flex; flex-wrap:wrap; gap:8px; margin-top:16px; }
+  .setting-actions button.secondary { background:#263a30; }
+  .shortcut-editor { display:flex; gap:8px; align-items:center; padding:8px 0; border-bottom:1px solid var(--border); }
+  .shortcut-editor span { flex:1; overflow-wrap:anywhere; font-size:13px; }
+  .shortcut-editor button { padding:7px 10px; }
+  .note { margin-top: 32px; color: #789887; font-size: 12px; line-height: 1.6; }
+  footer { text-align: center; color: #62816f; font-size: 11px; padding: 18px; }
+  @media (max-width: 520px) {
+    main { margin-top: 6vh; }
+    .shortcuts { grid-template-columns: repeat(2, 1fr); }
+    .status { display: none; }
+    .search button { padding: 12px; }
+  }
+</style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="logo" aria-hidden="true">🐼</div>
+    <div>
+      <div class="brand">Panda<span> Browser</span></div>
+      <div class="tag">A calmer corner of the web</div>
+    </div>
+    <div class="spacer"></div>
+    <div class="status" id="themeStatus">Personalize your browser</div>
+    <button class="settings-button" id="openSettings" type="button" aria-label="Personalize WebPanda">⚙ Settings</button>
+  </header>
+
+  <main>
+    <div class="mascot" aria-hidden="true">🐼</div>
+    <h1>Browse your <span>world.</span></h1>
+    <p class="subtitle">A little greener. A little calmer. Ready when you are.</p>
+
+    <form class="search" id="searchForm">
+      <span class="search-icon" aria-hidden="true">⌕</span>
+      <input id="searchInput" type="text" placeholder="Search Google or enter a website…" aria-label="Search Google or enter a website" autocomplete="off" autofocus>
+      <button type="submit">Search</button>
+    </form>
+
+    <div class="quick-title">Quick links</div>
+    <div class="shortcuts" id="shortcuts"></div>
+
+    <p class="note">Panda is a custom start page, not a standalone browser engine.<br>
+    Save this file and open it in your browser to use the themed search page.</p>
+  </main>
+  <footer>🐼 WebPanda · Your browser, your style</footer>
+  <div class="settings-panel" id="settingsPanel" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+    <section class="settings-card">
+      <h2 id="settingsTitle">🐼 Make Panda yours</h2><p class="tag">Your choices are saved on this computer.</p>
+      <h3>Homepage appearance</h3>
+      <div class="row"><div><label for="backgroundChoice">Background</label><select id="backgroundChoice"><option value="forest">Forest glow</option><option value="midnight">Midnight gradient</option><option value="ocean">Ocean blue</option><option value="sunset">Sunset purple</option><option value="custom">Custom image URL</option></select></div><div><label for="accentChoice">Accent color</label><select id="accentChoice"><option value="#56d68b">Panda green</option><option value="#64beff">Ocean blue</option><option value="#c891ff">Purple</option><option value="#ff91b9">Rose pink</option><option value="#ffc857">Golden amber</option><option value="#ffffff">White</option></select></div></div>
+      <label for="backgroundUrl">Custom background image URL (optional)</label><input id="backgroundUrl" placeholder="https://example.com/my-background.jpg" autocomplete="url">
+      <h3>Search engine</h3><label for="searchEngine">Choose your search engine</label><select id="searchEngine"><option value="google">Google</option><option value="bing">Bing</option><option value="duckduckgo">DuckDuckGo</option><option value="brave">Brave Search</option><option value="yahoo">Yahoo</option></select>
+      <h3>Quick links</h3><div id="shortcutEditor"></div>
+      <div class="row"><div><label for="shortcutName">Shortcut name</label><input id="shortcutName" placeholder="My site"></div><div><label for="shortcutEmoji">Icon emoji</label><input id="shortcutEmoji" maxlength="4" placeholder="⭐"></div></div>
+      <label for="shortcutUrl">Website address</label><input id="shortcutUrl" placeholder="https://example.com" autocomplete="url">
+      <div class="setting-actions"><button type="button" id="addShortcut">+ Add shortcut</button><button type="button" id="saveSettings">Save changes</button><button type="button" class="secondary" id="resetSettings">Reset defaults</button><button type="button" class="secondary" id="closeSettings">Close</button></div>
+    </section>
+  </div>
+
+<script>
+  const form = document.getElementById('searchForm');
+  const input = document.getElementById('searchInput');
+  const settingsPanel = document.getElementById('settingsPanel');
+  const defaultShortcuts = [
+    { name: 'Google', url: 'https://www.google.com', emoji: '🔎' },
+    { name: 'YouTube', url: 'https://www.youtube.com', emoji: '▶️' },
+    { name: 'Wikipedia', url: 'https://www.wikipedia.org', emoji: '🌐' },
+    { name: 'Reddit', url: 'https://www.reddit.com', emoji: '💬' }
+  ];
+  const defaults = { backgroundChoice: 'forest', backgroundUrl: '', accentChoice: '#56d68b', searchEngine: 'google', shortcuts: defaultShortcuts };
+  let config = loadConfig();
+  function loadConfig() {
+    try { return { ...defaults, ...JSON.parse(localStorage.getItem('pandaPersonalization') || '{}') }; }
+    catch { return { ...defaults, shortcuts: [...defaultShortcuts] }; }
+  }
+  function saveConfig() { localStorage.setItem('pandaPersonalization', JSON.stringify(config)); }
+  function searchUrl(query) {
+    const engines = { google: 'https://www.google.com/search?q=', bing: 'https://www.bing.com/search?q=', duckduckgo: 'https://duckduckgo.com/?q=', brave: 'https://search.brave.com/search?q=', yahoo: 'https://search.yahoo.com/search?p=' };
+    return (engines[config.searchEngine] || engines.google) + encodeURIComponent(query);
+  }
+  function looksLikeUrl(query) { return /^(https?:\/\/)|^([a-z0-9-]+\.)+[a-z]{2,}(\/.*)?$/i.test(query); }
+  form.addEventListener('submit', function (event) {
+    event.preventDefault(); const query = input.value.trim(); if (!query) { input.focus(); return; }
+    window.location.href = looksLikeUrl(query) ? (query.startsWith('http') ? query : 'https://' + query) : searchUrl(query);
+  });
+  function renderShortcuts() {
+    const area = document.getElementById('shortcuts'); area.replaceChildren();
+    config.shortcuts.forEach(item => {
+      const a = document.createElement('a'); a.className = 'shortcut'; a.href = item.url;
+      const emoji = document.createElement('span'); emoji.className = 'emoji'; emoji.textContent = item.emoji || '🔗';
+      const name = document.createElement('span'); name.className = 'name'; name.textContent = item.name;
+      a.append(emoji, name); area.append(a);
+    });
+    const editor = document.getElementById('shortcutEditor'); editor.replaceChildren();
+    config.shortcuts.forEach((item, index) => {
+      const row = document.createElement('div'); row.className = 'shortcut-editor';
+      const label = document.createElement('span'); label.textContent = `${item.emoji || '🔗'} ${item.name} — ${item.url}`;
+      const remove = document.createElement('button'); remove.type = 'button'; remove.className = 'secondary'; remove.textContent = 'Remove';
+      remove.addEventListener('click', () => { config.shortcuts.splice(index, 1); renderShortcuts(); }); row.append(label, remove); editor.append(row);
+    });
+  }
+  function applyAppearance() {
+    document.documentElement.style.setProperty('--accent', config.accentChoice || defaults.accentChoice);
+    const backgrounds = {
+      forest: 'radial-gradient(ellipse at top, #153d2b 0%, #07130f 65%)',
+      midnight: 'linear-gradient(135deg, #080b14, #1b2035 55%, #07090f)',
+      ocean: 'linear-gradient(135deg, #061522, #0b4160 55%, #06101c)',
+      sunset: 'linear-gradient(135deg, #190b25, #49234e 55%, #100a19)',
+      custom: 'none'
+    };
+    const customUrl = (config.backgroundUrl || '').trim();
+    if (config.backgroundChoice === 'custom' && /^https?:\/\//i.test(customUrl)) {
+      document.documentElement.style.setProperty('--custom-bg', `linear-gradient(#07130f88,#07130f99), url("${customUrl.replace(/["\\]/g, '')}")`);
+      document.body.style.backgroundImage = `linear-gradient(#07130f88,#07130f99), url("${customUrl.replace(/["\\]/g, '')}")`;
+    } else {
+      document.body.style.backgroundImage = backgrounds[config.backgroundChoice] || backgrounds.forest;
+      document.documentElement.style.setProperty('--custom-bg', 'none');
+    }
+    document.getElementById('themeStatus').textContent = `${config.backgroundChoice === 'custom' ? 'Custom' : config.backgroundChoice[0].toUpperCase()+config.backgroundChoice.slice(1)} background · Personalized`;
+    renderShortcuts();
+  }
+  function openSettings() {
+    document.getElementById('backgroundChoice').value = config.backgroundChoice;
+    document.getElementById('backgroundUrl').value = config.backgroundUrl || '';
+    document.getElementById('accentChoice').value = config.accentChoice || defaults.accentChoice;
+    document.getElementById('searchEngine').value = config.searchEngine || 'google';
+    renderShortcuts(); settingsPanel.style.display = 'flex';
+  }
+  document.getElementById('openSettings').addEventListener('click', openSettings);
+  document.getElementById('closeSettings').addEventListener('click', () => settingsPanel.style.display = 'none');
+  settingsPanel.addEventListener('click', e => { if (e.target === settingsPanel) settingsPanel.style.display = 'none'; });
+  document.getElementById('addShortcut').addEventListener('click', () => {
+    const name = document.getElementById('shortcutName').value.trim();
+    let url = document.getElementById('shortcutUrl').value.trim();
+    const emoji = document.getElementById('shortcutEmoji').value.trim() || '🔗';
+    if (!name || !url) { alert('Enter a shortcut name and website address first.'); return; }
+    if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
+    try { new URL(url); } catch { alert('That website address does not look valid.'); return; }
+    config.shortcuts.push({ name, url, emoji });
+    document.getElementById('shortcutName').value = ''; document.getElementById('shortcutUrl').value = ''; document.getElementById('shortcutEmoji').value = '';
+    renderShortcuts();
+  });
+  document.getElementById('saveSettings').addEventListener('click', () => {
+    config.backgroundChoice = document.getElementById('backgroundChoice').value;
+    config.backgroundUrl = document.getElementById('backgroundUrl').value.trim();
+    config.accentChoice = document.getElementById('accentChoice').value;
+    config.searchEngine = document.getElementById('searchEngine').value;
+    saveConfig(); applyAppearance(); settingsPanel.style.display = 'none';
+  });
+  document.getElementById('resetSettings').addEventListener('click', () => {
+    config = { ...defaults, shortcuts: [...defaultShortcuts] }; saveConfig(); openSettings(); applyAppearance();
+  });
+  applyAppearance();
+</script>
+</body>
+</html>

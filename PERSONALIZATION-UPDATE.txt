@@ -1,0 +1,20 @@
+PANDA BROWSER — PERSONALIZATION UPDATE
+
+This update adds:
+- Homepage background presets and custom background image URL
+- Accent color picker for the homepage
+- Homepage search engine selector (Google, Bing, DuckDuckGo, Brave Search, Yahoo)
+- Add and remove quick-link shortcuts with custom names and emoji
+- A saved homepage personalization profile in the browser's local storage
+- Default search engine selection for the browser address bar, saved in app settings
+
+UPDATE YOUR EXISTING GITHUB REPOSITORY
+1. Extract this ZIP.
+2. In your existing GitHub WebPanda repository, replace Program.cs with this version.
+3. Replace webpanda.html with this version.
+4. Commit both changes. The GitHub Actions workflow should build again.
+5. When the run succeeds, download the newest WebPanda-Windows-x64 artifact and extract all files.
+6. Keep webpanda.html beside WebPanda.exe.
+
+The homepage's Settings button opens the personalization panel. Click Save changes to keep the choices.
+The address-bar search engine can be changed from the ⚙ menu in the browser toolbar under Default search engine.

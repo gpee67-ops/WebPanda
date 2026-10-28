@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <SelfContained>true</SelfContained>
+    <PublishSingleFile>true</PublishSingleFile>
+    <AssemblyName>WebPanda</AssemblyName>
+    <ApplicationIcon>webpanda.ico</ApplicationIcon>
+    <RootNamespace>WebPanda</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2903.40" />
+    <Content Include="webpanda.html" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="webpanda.ico" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>

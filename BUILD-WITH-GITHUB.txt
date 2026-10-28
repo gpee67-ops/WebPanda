@@ -1,0 +1,18 @@
+BUILD PANDA BROWSER WITHOUT INSTALLING .NET ON YOUR LAPTOP
+
+1. Go to https://github.com and sign in or create a free account.
+2. Create a new repository. Name it WebPanda. Choose Public or Private, then create it.
+3. On the new repository page, choose "Add file" > "Upload files".
+4. Extract this ZIP on your laptop. Upload the CONTENTS of the WebPanda_Windows folder (including the hidden .github folder, WebPanda.csproj, Program.cs, webpanda.html, and the other files) to the repository. Commit the upload.
+   Important: GitHub's browser uploader may not show hidden folders. If it won't upload .github/workflows/build-windows.yml, use GitHub's "Add file" > "Create new file" and enter this path as the filename:
+   .github/workflows/build-windows.yml
+   Copy the workflow contents from the file in this ZIP.
+5. Open the repository's "Actions" tab. Select "Build WebPanda for Windows" on the left. Click "Run workflow", then the green "Run workflow" button.
+6. Wait for the workflow to finish successfully.
+7. Open the completed workflow run. At the bottom, under "Artifacts", click "WebPanda-Windows-x64" to download the ZIP containing WebPanda.exe and webpanda.html.
+8. Extract the downloaded artifact ZIP. Keep WebPanda.exe and webpanda.html together in the same folder. Double-click WebPanda.exe.
+
+Notes:
+- GitHub builds the app on a hosted Windows machine, so you do not need .NET installed locally or administrator permission to install the SDK.
+- The app uses Microsoft Edge WebView2. Many Windows 10/11 PCs already have its runtime. If Panda shows a WebView2 error, ask the device administrator to install the official WebView2 Runtime.
+- Do not upload passwords, PINs, or other private information to GitHub.
