@@ -4,29 +4,76 @@ name: Build WebPanda for Windows
 on:
   workflow_dispatch:
   push:
-    branches: [ main ]
+    branches:
+      - main
+
+permissions:
+  contents: read
 
 jobs:
   build:
+    name: Build WebPanda
     runs-on: windows-latest
 
     steps:
-      - name: Check out WebPanda
+      - name: Download repository
         uses: actions/checkout@v4
 
-      - name: Install .NET 8 SDK
+      - name: Install .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 8.0.x
 
-      - name: Build WebPanda
-        run: dotnet publish PandaBrowser.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -o publish
-
-      - name: Include start page
+      - name: Find WebPanda project
         shell: pwsh
-        run: Copy-Item panda.html publish/panda.html -Force
+        run: |
+          $project = Get-ChildItem -Path . -Filter "*.csproj" -File -Recurse |
+            Where-Object {
+              $_.FullName -notmatch '[\\/](bin|obj|\.git)[\\/]'
+            } |
+            Sort-Object @{
+              Expression = {
+                if ($_.Name -eq "WebPanda.csproj") { 0 }
+                elseif ($_.Name -eq "PandaBrowser.csproj") { 1 }
+                else { 2 }
+              }
+            } |
+            Select-Object -First 1
 
-      - name: Upload WebPanda
+          if (-not $project) {
+            Write-Error "No .csproj file was found. The C# browser project must be added to the repository."
+            exit 1
+          }
+
+          Write-Host "Found project: $($project.FullName)"
+          "PROJECT_FILE=$($project.FullName)" |
+            Out-File -FilePath $env:GITHUB_ENV -Append
+
+      - name: Build Windows application
+        shell: pwsh
+        run: |
+          dotnet publish "$env:PROJECT_FILE" `
+            --configuration Release `
+            --runtime win-x64 `
+            --self-contained true `
+            -p:PublishSingleFile=true `
+            -p:IncludeNativeLibrariesForSelfExtract=true `
+            --output publish
+
+          if ($LASTEXITCODE -ne 0) {
+            throw "WebPanda failed to build."
+          }
+
+      - name: Include browser start page
+        shell: pwsh
+        run: |
+          if (Test-Path "panda.html") {
+            Copy-Item "panda.html" "publish/panda.html" -Force
+          } else {
+            Write-Host "No panda.html found; skipping optional start page."
+          }
+
+      - name: Upload WebPanda for Windows
         uses: actions/upload-artifact@v4
         with:
           name: WebPanda-Windows-x64
